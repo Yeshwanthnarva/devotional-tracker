@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Devotional Tracker</title>
+<style>
+body { font-family: sans-serif; text-align: center; padding: 20px; background: #f0f8ff; }
+h1 { color: #4a148c; margin-bottom: 5px; }
+.instructions { font-size: 16px; color: #333; margin-bottom: 15px; }
+button { font-size: 18px; padding: 10px 15px; margin: 5px; border-radius: 8px; border: none; background-color: #7b1fa2; color: white; }
+textarea { width: 90%; height: 120px; font-size: 18px; padding: 10px; margin-bottom: 10px; }
+#count, #todayTimer, #totalTimer { font-size: 24px; color: #1a237e; margin: 5px; }
+.mode-btn { background-color: #512da8; }
+input { font-size: 18px; padding: 5px; width: 80%; margin-bottom: 10px; }
+.quote { font-style: italic; margin-top: 20px; color: #00695c; font-size: 18px; }
+#typedAwareness { font-size: 16px; color: #ff5722; margin-bottom: 5px; }
+</style>
+</head>
+<body>
+
+<h1>Devotional Tracker</h1>
+
+<div class="instructions">
+Welcome to your Devotional Tracker! Default mantra: <b>Sri Matre Namaha</b>.<br>
+Type your preferred mantra to start your practice.<br>
+Choose typing or tapping — both are recorded.<br>
+Track your daily repetitions and time spent in devotion.
+</div>
+
+<input type="text" id="mantraText" placeholder="Enter your mantra" value="Sri Matre Namaha">
+
+<br>
+<button class="mode-btn" onclick="switchMode('type')">Typing Mode</button>
+<button class="mode-btn" onclick="switchMode('tap')">Tap Mode</button>
+
+<hr>
+
+<!-- Typing Mode -->
+<div id="typingMode">
+    <textarea id="mantraInput" placeholder="Type your mantra repeatedly..."></textarea>
+    <div>Typing Count: <span id="typeCount">0</span></div>
+    <div id="typedAwareness">Typed so far (for awareness): 0</div>
+    <button onclick="doneTyping()">Done Typing</button>
+    <button onclick="resetTyping()">Reset Typing</button>
+</div>
+
+<!-- Tap Mode -->
+<div id="tapMode" style="display:none;">
+    <h2 id="tapMantraDisplay">Sri Matre Namaha</h2>
+    <div>Tap Count: <span id="tapCount">0</span></div>
+    <button onclick="incrementTap()">+1</button>
+    <button onclick="resetTap()">Reset Tap</button>
+</div>
+
+<hr>
+
+<h3>Timer</h3>
+<div>Today Time: <span id="todayTimer">00:00:00</span></div>
+
+<h3>Stats</h3>
+<div>Today Count: <span id="todayCount">0</span></div>
+<div>Total Count: <span id="totalCount">0</span></div>
+<div>Total Time: <span id="totalTimer">00:00:00</span></div>
+<div id="minCheck"></div>
+
+<div class="quote" id="quoteDisplay"></div>
+
+<script>
+// ---------------- Local Storage ----------------
+function getTodayKey() { return new Date().toISOString().slice(0,10) + "_japa"; }
+let todayKey = getTodayKey();
+let dailyData = JSON.parse(localStorage.getItem(todayKey)) || {type:0, tap:0, time:0};
+
+// ---------------- Quotes ----------------
+const quotes = [
+    "Japa purifies the mind and leads to Moksha.",
+    "Repetition of the mantra strengthens devotion and peace.",
+    "Daily japa brings inner calm and spiritual growth.",
+    "Mantra chanting awakens the soul and guides towards liberation.",
+    "Persistent japa removes negative thoughts and purifies karma."
+];
+function showRandomQuote() {
+    document.getElementById("quoteDisplay").innerText = quotes[Math.floor(Math.random()*quotes.length)];
+}
+showRandomQuote();
+setInterval(showRandomQuote,60000);
+
+// ---------------- Mode Switch ----------------
+function switchMode(mode){
+    document.getElementById("typingMode").style.display = (mode==='type')?'block':'none';
+    document.getElementById("tapMode").style.display = (mode==='tap')?'block':'none';
+}
+document.getElementById("mantraText").addEventListener("input", function(){
+    document.getElementById("tapMantraDisplay").innerText = this.value || "Your Mantra";
+});
+
+// ---------------- Timer ----------------
+let timerRunning=false, startTime=0;
+function startTimerSession(){ if(!timerRunning){ startTime=Date.now(); timerRunning=true; } }
+function stopTimerSession(){ 
+    if(timerRunning){ 
+        let elapsed = Math.floor((Date.now()-startTime)/1000);
+        dailyData.time += elapsed;
+        localStorage.setItem(todayKey,JSON.stringify(dailyData));
+        timerRunning=false;
+    } 
+}
+function updateTimer(){
+    let elapsedToday = dailyData.time;
+    if(timerRunning) elapsedToday += Math.floor((Date.now()-startTime)/1000);
+    document.getElementById("todayTimer").innerText = secondsToHMS(elapsedToday);
+
+    // total time
+    let totalTime = elapsedToday;
+    for(let key in localStorage){
+        if(key.endsWith("_japa") && key!==todayKey){
+            let d = JSON.parse(localStorage.getItem(key));
+            totalTime += d.time || 0;
+        }
+    }
+    document.getElementById("totalTimer").innerText = secondsToHMS(totalTime);
+}
+setInterval(updateTimer,1000);
+function secondsToHMS(sec){ let h=Math.floor(sec/3600), m=Math.floor((sec%3600)/60), s=sec%60; return `${pad(h)}:${pad(m)}:${pad(s)}`; }
+function pad(n){ return n<10?'0'+n:n; }
+
+// ---------------- Typing Mode ----------------
+let sessionAwarenessCount=0;
+
+const textarea = document.getElementById("mantraInput");
+textarea.addEventListener("input", function(){
+    if(!timerRunning) startTimerSession();
+});
+
+textarea.addEventListener("keydown", function(e){
+    if(e.key==="Enter"){
+        e.preventDefault();
+        const mantra = document.getElementById("mantraText").value.trim();
+        if(!mantra) return;
+        const lines = textarea.value.split("\n");
+        const currentLine = lines[lines.length-1]; // only last line
+        const count = (currentLine.match(new RegExp(mantra,"gi"))||[]).length;
+        sessionAwarenessCount += count;
+        document.getElementById("typedAwareness").innerText = `Typed so far (for awareness): ${sessionAwarenessCount}`;
+        textarea.value += "\n";
+        textarea.scrollTop = textarea.scrollHeight;
+    }
+});
+
+function doneTyping(){
+    const mantra = document.getElementById("mantraText").value.trim();
+    const text = textarea.value.trim();
+    if(!mantra || !text) return;
+    const count = (text.match(new RegExp(mantra,"gi"))||[]).length;
+    if(count>0){
+        dailyData.type += count;
+        localStorage.setItem(todayKey,JSON.stringify(dailyData));
+        document.getElementById("typeCount").innerText = dailyData.type;
+        updateStats();
+    }
+    textarea.value="";
+    sessionAwarenessCount=0;
+    document.getElementById("typedAwareness").innerText = "Typed so far (for awareness): 0";
+    stopTimerSession();
+}
+
+function resetTyping(){
+    textarea.value="";
+    dailyData.type=0;
+    localStorage.setItem(todayKey,JSON.stringify(dailyData));
+    document.getElementById("typeCount").innerText=0;
+    sessionAwarenessCount=0;
+    document.getElementById("typedAwareness").innerText="Typed so far (for awareness): 0";
+    updateStats();
+}
+
+// ---------------- Tap Mode ----------------
+function incrementTap(){ if(!timerRunning) startTimerSession(); dailyData.tap++; localStorage.setItem(todayKey,JSON.stringify(dailyData)); document.getElementById("tapCount").innerText=dailyData.tap; updateStats(); }
+function resetTap(){ dailyData.tap=0; localStorage.setItem(todayKey,JSON.stringify(dailyData)); document.getElementById("tapCount").innerText=0; updateStats(); }
+
+// ---------------- Stats ----------------
+function updateStats(){
+    const todayTotal = dailyData.type + dailyData.tap;
+    document.getElementById("todayCount").innerText = todayTotal;
+
+    let total = 0;
+    for(let key in localStorage){ if(key.endsWith("_japa")){ let d=JSON.parse(localStorage.getItem(key)); total += (d.type||0)+(d.tap||0); } }
+    document.getElementById("totalCount").innerText = total;
+
+    document.getElementById("minCheck").innerText = (todayTotal>=108) ? "Minimum daily 108 achieved ✅" : "Minimum daily 108 not yet reached ❌";
+}
+
+// ---------------- Daily Reset ----------------
+setInterval(function(){
+    const newTodayKey = getTodayKey();
+    if(todayKey!==newTodayKey){
+        todayKey = newTodayKey;
+        dailyData = JSON.parse(localStorage.getItem(todayKey)) || {type:0,tap:0,time:0};
+        timerRunning=false;
+        document.getElementById("typeCount").innerText=dailyData.type;
+        document.getElementById("tapCount").innerText=dailyData.tap;
+        updateStats();
+    }
+},60000);
+</script>
+</body>
+</html>
