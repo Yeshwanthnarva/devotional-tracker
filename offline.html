@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<link rel="manifest" href="/manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Japa Tracker">
+<link rel="apple-touch-icon" href="/icons/icon-152.png">
+<link rel="apple-touch-icon" sizes="192x192" href="/icons/icon-192.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#7a2e2e">
+<link rel="icon" sizes="192x192" href="/icons/icon-192.png">
+<link rel="icon" sizes="512x512" href="/icons/icon-512.png">
+<title>Offline Setup | Devotional Tracker</title>
+<link rel="stylesheet" href="style.css?v=2">
+<style>
+  .offline-steps {
+    text-align: left;
+    margin: 20px 0;
+    padding-left: 20px;
+  }
+  .offline-steps li {
+    margin: 12px 0;
+    color: #7a5a3a;
+  }
+  .retry-btn {
+    background: #d9914a;
+    color: white;
+    border: none;
+    padding: 12px 28px;
+    border-radius: 40px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 20px;
+  }
+  .retry-btn:active {
+    transform: scale(0.98);
+  }
+</style>
+</head>
+<body>
+
+<nav class="sacred-nav">
+    <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        <a href="index.html">Home</a>
+        <a href="tracker.html">Japa</a>
+        <a href="stats.html">Stats</a>
+        <a href="argala-stotram.html">Argala-Stotram</a>
+        <a href="hanuman-chalisa.html">Hanuman Chalisa</a>
+        <a href="gita-quotes.html">Gita-Quotes</a>
+        <a href="about.html">About</a>
+    </div>
+</nav>
+
+<div class="sacred-page">
+    <div class="sacred-header">
+        <span class="om">ॐ</span>
+        <h1>Offline Mode</h1>
+        <div class="subtitle">First time setup needed</div>
+    </div>
+
+    <div class="theme-card" style="text-align:center;">
+        <p style="font-size: 1.2rem; margin-bottom: 20px;">📿 <strong>To use this app offline, you need internet just once.</strong></p>
+        
+        <div style="background: #fef3e8; border-radius: 24px; padding: 20px; margin: 20px 0;">
+            <strong>🌸 How to enable offline mode:</strong>
+            <ul class="offline-steps">
+                <li>1️⃣ Connect to the internet</li>
+                <li>2️⃣ Refresh this page</li>
+                <li>3️⃣ Tap Share button → "Add to Home Screen"</li>
+                <li>4️⃣ Then it works offline forever!</li>
+            </ul>
+        </div>
+        
+        <button class="retry-btn" onclick="location.reload()">⟳ Try Again (when online)</button>
+        
+        <p style="font-size: 0.8rem; color: #9b7a58; margin-top: 24px;">
+            🙏 Once installed, you can chant Sri Matre Namaha<br>
+            even without internet — anytime, anywhere.
+        </p>
+    </div>
+</div>
+
+<button class="scroll-top" id="scrollTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+window.addEventListener('scroll', () => {
+    const btn = document.getElementById('scrollTop');
+    if (window.scrollY > 300) btn.classList.add('show');
+    else btn.classList.remove('show');
+});
+</script>
+<script src="/pwa.js?v=2"></script>
+</body>
+</html>

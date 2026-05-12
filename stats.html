@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<link rel="manifest" href="/manifest.json">
+<!-- iOS (iPhone/iPad) PWA support -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Japa Tracker">
+<link rel="apple-touch-icon" href="/icons/icon-152.png">
+<link rel="apple-touch-icon" sizes="192x192" href="/icons/icon-192.png">
+<!-- Android PWA support -->
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#7a2e2e">
+<link rel="icon" sizes="192x192" href="/icons/icon-192.png">
+<link rel="icon" sizes="512x512" href="/icons/icon-512.png">
+<title>Stats | Devotional Tracker</title>
+<link rel="stylesheet" href="style.css?v=2">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+<nav class="sacred-nav">
+    <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        <a href="index.html">Home</a>
+        <a href="tracker.html">Japa</a>
+        <a href="stats.html">Stats</a>
+        <a href="argala-stotram.html">Argala-Stotram</a>
+        <a href="hanuman-chalisa.html">Hanuman Chalisa</a>
+        <a href="gita-quotes.html">Gita-Quotes</a>
+        <a href="about.html">About</a>
+    </div>
+    <button id="logout">Logout</button>
+</nav>
+
+<div class="sacred-page">
+    <div class="sacred-header">
+        <span class="om">ॐ</span>
+        <h1>My Stats</h1>
+        <div class="subtitle">Your spiritual journey — the goal is never the end</div>
+        <div id="connection-status" style="text-align:center; margin-top:8px;"></div>
+    </div>
+    <div id="stats-content">
+        <div style="text-align:center; padding:40px;">⏳ Loading stats...</div>
+    </div>
+</div>
+
+<button class="scroll-top" id="scrollTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+<script src="firebase-config.js?v=2"></script>
+<script src="auth.js?v=2"></script>
+<script>
+window.addEventListener('scroll', () => {
+    document.getElementById('scrollTop').classList.toggle('show', window.scrollY > 300);
+});
+
+function updateConnectionStatus() {
+    const s = document.getElementById('connection-status');
+    if (s) s.innerHTML = navigator.onLine
+        ? '<span class="online-badge">🟢 Online</span>'
+        : '<span class="offline-badge">🔴 Offline</span>';
+}
+window.addEventListener('online',  updateConnectionStatus);
+window.addEventListener('offline', updateConnectionStatus);
+updateConnectionStatus();
+
+function getToday() {
+    const n = new Date();
+    return `${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,'0')}-${String(n.getDate()).padStart(2,'0')}`;
+}
+
+const CRORE = 10000000;
+function fNum(n) { return n.toLocaleString('en-IN'); }
+function fTime(s) {
+    const h = Math.floor(s/3600), m = Math.floor((s%3600)/60);
+    if (h > 0) return `${h}h ${m}m`;
+    if (m > 0) return `${m}m`;
+    return `${s}s`;
+}
+
+const QUOTES = [
+    "🌸 The goal is not the destination — the journey itself is the blessing.",
+    "🙏 Even 1% daily progress compounds into something magnificent.",
+    "💎 Don't worry about 1 Crore — just focus on today's 108.",
+    "🌟 Every master was a beginner who never gave up.",
+    "🔥 Consistency is more important than intensity. Keep showing up!",
+    "✨ Build the HABIT of chanting EVERY SINGLE DAY."
+];
+const WISDOM = [
+    "🧘 The real purpose of 1 Crore is to build the HABIT of chanting EVERY SINGLE DAY.",
+    "🙏 The goal is just a milestone, not the destination. The practice never stops.",
+    "🌟 Even 1% daily progress is still progress!",
+    "🕉️ When you reach 1 Crore, you'll smile and keep chanting. That's the real victory."
+];
+
+// Global chart instance
+let trendChartInstance = null;
+let allDailyRecords    = [];
+
+// Build chart data for different periods
+function buildTrendData(period) {
+    const today = new Date();
+    let labels = [], data = [];
+
+    if (period === '7d') {
+        for (let i = 6; i >= 0; i--) {
+            const d = new Date(today); 
+            d.setDate(today.getDate() - i);
+            const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+            const rec = allDailyRecords.find(r => r.date === key);
+            labels.push(d.toLocaleDateString('en-US', { weekday: 'short' }));
+            data.push(rec ? rec.count : 0);
+        }
+    } 
+    else if (period === '1m') {
+        for (let i = 29; i >= 0; i--) {
+            const d = new Date(today); 
+            d.setDate(today.getDate() - i);
+            const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+            const rec = allDailyRecords.find(r => r.date === key);
+            labels.push(`${d.getDate()}/${d.getMonth()+1}`);
+            data.push(rec ? rec.count : 0);
+        }
+    } 
+    else if (period === '1y') {
+        for (let i = 11; i >= 0; i--) {
+            const d = new Date(today.getFullYear(), today.getMonth() - i, 1);
+            const yr  = d.getFullYear();
+            const mo  = String(d.getMonth() + 1).padStart(2, '0');
+            const sum = allDailyRecords
+                .filter(r => r.date.startsWith(`${yr}-${mo}`))
+                .reduce((acc, r) => acc + r.count, 0);
+            labels.push(d.toLocaleDateString('en-US', { month: 'short', year: '2-digit' }));
+            data.push(sum);
+        }
+    } 
+    else if (period === '5y') {
+        for (let i = 4; i >= 0; i--) {
+            const yr = today.getFullYear() - i;
+            const sum = allDailyRecords
+                .filter(r => r.date.startsWith(`${yr}-`))
+                .reduce((acc, r) => acc + r.count, 0);
+            labels.push(`${yr}`);
+            data.push(sum);
+        }
+    }
+
+    return { labels, data };
+}
+
+// Render trend chart
+function renderTrendChart(period) {
+    const canvas = document.getElementById('trend-chart');
+    if (!canvas) return;
+
+    if (trendChartInstance) { 
+        trendChartInstance.destroy(); 
+        trendChartInstance = null; 
+    }
+
+    const { labels, data } = buildTrendData(period);
+
+    trendChartInstance = new Chart(canvas, {
+        type: 'bar',
+        data: {
+            labels,
+            datasets: [{ 
+                label: 'Japa', 
+                data, 
+                backgroundColor: '#d9914a', 
+                borderRadius: 6,
+                barPercentage: 0.7
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: { 
+                legend: { display: false },
+                tooltip: { 
+                    callbacks: {
+                        label: function(context) {
+                            return `Japa: ${context.raw.toLocaleString('en-IN')}`;
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: { 
+                    beginAtZero: true, 
+                    grid: { color: '#f0dfcb' }
+                },
+                x: { 
+                    grid: { display: false }, 
+                    ticks: { maxRotation: 45, font: { size: 10 } } 
+                }
+            }
+        }
+    });
+
+    // Update button styles
+    ['7d', '1m', '1y', '5y'].forEach(p => {
+        const btn = document.getElementById(`period-${p}`);
+        if (btn) {
+            if (p === period) {
+                btn.style.background = '#d9914a';
+                btn.style.color = 'white';
+                btn.style.border = 'none';
+            } else {
+                btn.style.background = 'transparent';
+                btn.style.color = '#a35129';
+                btn.style.border = '1px solid #e2c7a4';
+            }
+        }
+    });
+}
+
+async function loadStats() {
+    const content = document.getElementById('stats-content');
+    let uid = null;
+
+    const user = auth.currentUser;
+    if (user) { uid = user.uid; }
+    else {
+        const s = localStorage.getItem('offline_user_session');
+        if (s) uid = JSON.parse(s).uid;
+        else {
+            content.innerHTML = `<div class="theme-card" style="text-align:center;">
+                <p>Please login to see your stats</p>
+                <button onclick="window.location.href='login.html'"
+                    style="background:#d9914a;color:white;border:none;padding:12px 24px;border-radius:40px;margin-top:10px;cursor:pointer;">Login</button>
+            </div>`;
+            return;
+        }
+    }
+
+    const today = getToday();
+    let streak = 0, mantra = "Sri Matre Namaha";
+    let totalJapa = 0, totalTime = 0, todayCount = 0;
+
+    try {
+        const userDoc = await db.collection('users').doc(uid).get();
+        if (userDoc.exists) {
+            streak = userDoc.data().streak || 0;
+            mantra = userDoc.data().mantra || "Sri Matre Namaha";
+        }
+
+        const snap = await db.collection('japa').doc(uid).collection('daily').get();
+        allDailyRecords = [];
+        snap.forEach(doc => {
+            const d = doc.data();
+            totalJapa += d.count || 0;
+            totalTime += d.time  || 0;
+            allDailyRecords.push({ date: doc.id, count: d.count || 0 });
+        });
+
+        const todayDoc = await db.collection('japa').doc(uid).collection('daily').doc(today).get();
+        if (todayDoc.exists) {
+            todayCount = todayDoc.data().count || 0;
+        } else {
+            const localRaw = localStorage.getItem(`japa_local_${uid}`);
+            if (localRaw) {
+                try {
+                    const local = JSON.parse(localRaw);
+                    if (local.date === today) todayCount = local.count || 0;
+                } catch(e) {}
+            }
+        }
+
+    } catch(err) {
+        console.error('Stats load error:', err);
+        const localRaw = localStorage.getItem(`japa_local_${uid}`);
+        if (localRaw) {
+            try {
+                const local = JSON.parse(localRaw);
+                if (local.date === today) todayCount = local.count || 0;
+            } catch(e) {}
+        }
+    }
+
+    const totalMalas    = Math.floor(totalJapa / 108);
+    const todayMalas    = Math.floor(todayCount / 108);
+    const croresDone    = Math.floor(totalJapa / CRORE);
+    const goalRemaining = totalJapa < CRORE ? CRORE - totalJapa : ((croresDone+1)*CRORE) - totalJapa;
+    const goalName      = totalJapa < CRORE ? "1 Crore" : `${croresDone+1} Crore`;
+    const goalTotal     = totalJapa < CRORE ? CRORE : (croresDone+1)*CRORE;
+    const pct           = Math.min(100, (totalJapa / goalTotal) * 100);
+
+    const milestones = [
+        { value: 108,      name: "First Mala 🌸" },
+        { value: 1000,     name: "1,000 Chants 🎉" },
+        { value: 10000,    name: "10,000 Chants 🌟" },
+        { value: 108000,   name: "1,000 Malas 🙏" },
+        { value: 100000,   name: "1 Lakh ✨" },
+        { value: 500000,   name: "5 Lakh 🔥" },
+        { value: 1000000,  name: "10 Lakh 💎" },
+        { value: 5000000,  name: "50 Lakh 🌺" },
+        { value: 10000000, name: "1 Crore! ✨" }
+    ];
+    const reached = milestones.filter(m => totalJapa >= m.value);
+    const next    = milestones.find(m => totalJapa < m.value);
+    const wisdom  = WISDOM[Math.floor(Math.random() * WISDOM.length)];
+    const quote   = QUOTES[Math.floor(Math.random() * QUOTES.length)];
+
+    const btnBase = `padding:8px 16px;border-radius:40px;font-size:0.85rem;font-weight:600;cursor:pointer;font-family:inherit;transition:all 0.2s;margin:0 4px;`;
+
+    // Build the complete stats page with new trend section
+    content.innerHTML = `
+        <div class="theme-card" style="text-align:center;">
+            📿 <strong>Your Mantra:</strong> "${mantra}"<br>
+            🔥 <strong>Current Streak:</strong> ${streak} days<br>
+            📊 <strong>Total Japa:</strong> ${fNum(totalJapa)} chants<br>
+            🏆 <strong>Crores Completed:</strong> ${croresDone}
+        </div>
+
+        <div style="background:#e3f2fd;border-left:4px solid #2196f3;padding:1rem;border-radius:16px;margin:1rem 0;">
+            💡 ${wisdom}
+        </div>
+
+        <div style="background:linear-gradient(135deg,#fff8f0,#fff2e5);border-radius:28px;padding:1.5rem;margin:1.5rem 0;text-align:center;border:2px solid #e2b686;">
+            <h3 style="color:#a4451c;">🎯 YOUR SPIRITUAL GOAL</h3>
+            <div style="font-size:2rem;font-weight:bold;color:#d9914a;">1,00,00,000 (1 Crore)</div>
+            <div style="margin:0.5rem 0;font-size:0.9rem;">Target: ${fNum(goalTotal)} repetitions of ${mantra}</div>
+            <div style="font-size:2rem;font-weight:bold;color:#bc6238;margin-top:1rem;">${fNum(totalJapa)}</div>
+            <div>Total Japa Completed</div>
+            <div style="width:100%;height:20px;background:#f0dfcb;border-radius:20px;overflow:hidden;margin:1rem 0;">
+                <div style="height:100%;background:linear-gradient(90deg,#d9914a,#bc6238);border-radius:20px;width:${pct}%;"></div>
+            </div>
+            <div style="font-weight:bold;color:#bc6238;">${pct.toFixed(4)}% of ${goalName} Goal</div>
+            <div style="margin-top:1rem;">
+                <strong>Achievements:</strong><br>
+                ${reached.slice(-4).map(m=>`<span style="background:#f7ede1;padding:0.2rem 0.6rem;border-radius:20px;font-size:0.7rem;margin:0.2rem;display:inline-block;">✅ ${m.name}</span>`).join('')}
+                ${next ? `<br><br><strong>Next:</strong> ${next.name} (${fNum(next.value)})` : ''}
+            </div>
+            <div style="font-style:italic;color:#bc6238;background:#fff8ef;padding:0.8rem;border-radius:20px;margin-top:1rem;border-left:3px solid #d9914a;">
+                🌸 ${quote} 🌸
+            </div>
+        </div>
+
+        <!-- Goal doughnut chart -->
+        <div style="background:#fff;border-radius:28px;padding:1.2rem;margin:1rem 0;border:1px solid #f0e0cc;text-align:center;">
+            <h3 style="color:#a4451c;">📊 Progress to ${goalName}</h3>
+            <canvas id="goal-chart" width="300" height="200" style="max-width:100%;"></canvas>
+            <div style="font-size:0.7rem;color:#9b8a74;margin-top:0.5rem;">${fNum(totalJapa)} / ${fNum(goalTotal)}</div>
+        </div>
+
+        <!-- NEW: Japa Trend with time period buttons -->
+        <div style="background:#fff;border-radius:28px;padding:1.2rem;margin:1rem 0;border:1px solid #f0e0cc;text-align:center;">
+            <h3 style="color:#a4451c;margin-bottom:0.8rem;">📈 Japa Trend</h3>
+            <div style="display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-bottom:1rem;">
+                <button id="period-7d" style="${btnBase}background:#d9914a;color:white;border:none;" onclick="renderTrendChart('7d')">7 Days</button>
+                <button id="period-1m" style="${btnBase}background:transparent;color:#a35129;border:1px solid #e2c7a4;" onclick="renderTrendChart('1m')">1 Month</button>
+                <button id="period-1y" style="${btnBase}background:transparent;color:#a35129;border:1px solid #e2c7a4;" onclick="renderTrendChart('1y')">1 Year</button>
+                <button id="period-5y" style="${btnBase}background:transparent;color:#a35129;border:1px solid #e2c7a4;" onclick="renderTrendChart('5y')">5 Years</button>
+            </div>
+            <canvas id="trend-chart" width="300" height="200" style="max-width:100%;"></canvas>
+            <div style="font-size:0.7rem;color:#9b8a74;margin-top:8px;">Click buttons to change time range</div>
+        </div>
+
+        <!-- Today's Stats -->
+        <div class="theme-card" style="text-align:center;">
+            <h3>📅 Today's Stats
+                <span style="font-size:0.65rem;color:#9b8a74;font-weight:normal;display:block;margin-top:4px;">${today}</span>
+            </h3>
+            <div style="display:flex;justify-content:space-around;flex-wrap:wrap;gap:1rem;margin:1rem 0;">
+                <div style="flex:1;min-width:100px;">
+                    <p style="font-size:2rem;font-weight:bold;color:#bc6238;">${fNum(todayCount)}</p>
+                    <p style="font-size:0.85rem;color:#9b7a58;">Japa Count</p>
+                </div>
+                <div style="flex:1;min-width:100px;">
+                    <p style="font-size:2rem;font-weight:bold;color:#bc6238;">${todayMalas}</p>
+                    <p style="font-size:0.85rem;color:#9b7a58;">Malas</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Overall Stats -->
+        <div class="theme-card" style="text-align:center;">
+            <h3>📊 Overall Stats</h3>
+            <div style="display:flex;justify-content:space-around;flex-wrap:wrap;gap:1rem;margin:1rem 0;">
+                <div style="flex:1;min-width:80px;">
+                    <p style="font-size:1.8rem;font-weight:bold;color:#bc6238;">${fNum(totalJapa)}</p>
+                    <p style="font-size:0.85rem;color:#9b7a58;">Total Japa</p>
+                </div>
+                <div style="flex:1;min-width:80px;">
+                    <p style="font-size:1.8rem;font-weight:bold;color:#bc6238;">${totalMalas}</p>
+                    <p style="font-size:0.85rem;color:#9b7a58;">Total Malas</p>
+                </div>
+                <div style="flex:1;min-width:80px;">
+                    <p style="font-size:1.8rem;font-weight:bold;color:#bc6238;">${fTime(totalTime)}</p>
+                    <p style="font-size:0.85rem;color:#9b7a58;">Total Time</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Streak -->
+        <div class="theme-card" style="text-align:center;">
+            <h3>🔥 Current Streak</h3>
+            <p style="font-size:3rem;font-weight:bold;color:#bc6238;">${streak}</p>
+            <p>days in a row</p>
+            <small>✨ Need 108 japa per day to maintain streak ✨</small>
+        </div>
+
+        <div style="text-align:center;margin-top:20px;">
+            <button onclick="location.reload()"
+                style="background:#d9914a;color:white;border:none;padding:12px 24px;border-radius:40px;cursor:pointer;font-size:1rem;">
+                ⟳ Refresh Stats
+            </button>
+        </div>
+    `;
+
+    setTimeout(() => {
+        // Goal doughnut chart
+        const gc = document.getElementById('goal-chart');
+        if (gc) {
+            new Chart(gc, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Completed', 'Remaining'],
+                    datasets: [{ data: [totalJapa, goalRemaining], backgroundColor: ['#d9914a','#f0dfcb'], borderWidth: 0 }]
+                },
+                options: { responsive: true, plugins: { legend: { position: 'bottom', labels: { font: { size: 11 } } } } }
+            });
+        }
+
+        // Initialize trend chart with 7 days
+        renderTrendChart('7d');
+    }, 100);
+}
+
+document.getElementById('logout')?.addEventListener('click', () => {
+    auth.signOut().then(() => {
+        localStorage.removeItem('offline_user_session');
+        window.location.href = 'login.html';
+    });
+});
+
+auth.onAuthStateChanged((user) => {
+    if (user) { 
+        loadStats(); 
+    }
+    else {
+        const s = localStorage.getItem('offline_user_session');
+        if (s) loadStats();
+        else document.getElementById('stats-content').innerHTML = `
+            <div class="theme-card" style="text-align:center;">
+                <p>Please login</p>
+                <button onclick="window.location.href='login.html'"
+                    style="background:#d9914a;color:white;border:none;padding:12px 24px;border-radius:40px;margin-top:10px;cursor:pointer;">Login</button>
+            </div>`;
+    }
+});
+</script>
+<script src="/pwa.js?v=2"></script>
+</body>
+</html>

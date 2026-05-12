@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="manifest" href="/manifest.json">
+<!-- iOS (iPhone/iPad) PWA support -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Japa Tracker">
+<link rel="apple-touch-icon" href="/icons/icon-152.png">
+<link rel="apple-touch-icon" sizes="192x192" href="/icons/icon-192.png">
+<!-- Android PWA support -->
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#7a2e2e">
+<link rel="icon" sizes="192x192" href="/icons/icon-192.png">
+<link rel="icon" sizes="512x512" href="/icons/icon-512.png">
+<title>Signup | Devotional Tracker</title>
+<link rel="stylesheet" href="style.css?v=2">
+</head>
+<body>
+
+<div class="auth-container">
+    <h1>🌸 Begin Devotional Your Journey Chanting 🌸</h1>
+
+    <form id="signup-form">
+        <label for="signup-email">Email</label>
+        <input type="email" id="signup-email" required placeholder="Enter your email">
+
+        <label for="signup-password">Password</label>
+        <!-- FIX: added minlength and hint -->
+        <input type="password" id="signup-password" required minlength="6" placeholder="Minimum 6 characters">
+        <small>Minimum 6 characters</small>
+
+        <label for="signup-confirm-password">Confirm Password</label>
+        <input type="password" id="signup-confirm-password" required placeholder="Repeat your password">
+
+        <button type="submit">Sign Up</button>
+    </form>
+
+    <!-- Added Google signup for consistency -->
+    <button type="button" id="google-login">Continue with Google</button>
+
+    <p>Already have an account? <a href="login.html">Login</a></p>
+</div>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+<script src="firebase-config.js?v=2"></script>
+<script src="auth.js?v=2"></script>
+<script src="/pwa.js?v=2"></script>
+</body>
+</html>

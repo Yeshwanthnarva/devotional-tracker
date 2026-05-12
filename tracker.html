@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<link rel="manifest" href="/manifest.json">
+<!-- iOS (iPhone/iPad) PWA support -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Japa Tracker">
+<link rel="apple-touch-icon" href="/icons/icon-152.png">
+<link rel="apple-touch-icon" sizes="192x192" href="/icons/icon-192.png">
+<!-- Android PWA support -->
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#7a2e2e">
+<link rel="icon" sizes="192x192" href="/icons/icon-192.png">
+<link rel="icon" sizes="512x512" href="/icons/icon-512.png">
+<title>Japa Tracker | Devotional Tracker</title>
+<link rel="stylesheet" href="style.css?v=2">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400&family=Noto+Sans+Devanagari:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<nav class="sacred-nav">
+    <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        <a href="index.html">Home</a>
+        <a href="tracker.html">Japa</a>
+        <a href="stats.html">Stats</a>
+        <a href="argala-stotram.html">Argala-Stotram</a>
+        <a href="hanuman-chalisa.html">Hanuman Chalisa</a>
+        <a href="gita-quotes.html">Gita-Quotes</a>
+        <a href="about.html">About</a>
+    </div>
+    <button id="logout">Logout</button>
+</nav>
+
+<div class="sacred-page">
+
+    <div class="sacred-header">
+        <span class="om">ॐ</span>
+        <h1>Japa Tracker</h1>
+        <div class="subtitle" id="current-mantra">Sri Matre Namaha — Salutations to the Holy Mother</div>
+        <div id="connection-status" style="text-align:center; margin-top:8px;"></div>
+    </div>
+
+    <!-- Progress Section -->
+    <div class="theme-card">
+        <h3 style="color:#a4451c; text-align:center;">Today's Progress</h3>
+        <div style="text-align:center;">
+            <p class="stats-value" id="today-count" style="font-size: 2.5rem;">0</p>
+            <p class="stats-label">Japa Count</p>
+            <p>Malas Completed: <span id="mala-count" style="font-weight:bold; color:#bc6238;">0</span></p>
+        </div>
+        <div class="progress-bar">
+            <div id="progress-fill" style="height: 12px; background: #d9914a; width: 0%; border-radius: 10px;"></div>
+        </div>
+        <p id="progress-label" style="text-align:center; font-size:0.85rem; margin-top:8px;">0 / 108 towards next mala</p>
+    </div>
+
+    <!-- Mode switcher -->
+    <div class="mode-buttons" style="display: flex; justify-content: center; gap: 15px; margin: 20px 0;">
+        <button type="button" id="tap-mode-btn" style="background: #d9914a; color: white; padding: 10px 24px; border: none; border-radius: 40px; cursor: pointer; font-weight: bold;">👆 Tap Mode</button>
+        <button type="button" id="typing-mode-btn" style="background: transparent; color: #a35129; padding: 10px 24px; border: 1px solid #e2c7a4; border-radius: 40px; cursor: pointer; font-weight: bold;">⌨️ Typing Mode</button>
+    </div>
+
+    <!-- Tap Mode -->
+    <div id="tap-mode" class="mode active">
+        <button type="button" id="tap-btn" style="background: #d9914a; color: white; padding: 20px 40px; border: none; border-radius: 60px; font-size: 1.3rem; font-weight: bold; cursor: pointer;">+1 Tap</button>
+        <p>Session Count: <span id="tap-count" style="font-weight:bold;">0</span></p>
+    </div>
+
+    <!-- Typing Mode -->
+    <div id="typing-mode" class="mode">
+        <div class="typing-mode-container">
+            <textarea id="typing-text" rows="3" placeholder="Type your mantra here...&#10;Example: Sri Matre Namaha&#10;You can type multiple times: Sri Matre Namaha Sri Matre Namaha"></textarea>
+            <div>
+                <button type="button" id="typing-submit">Submit & Count</button>
+            </div>
+            <p style="margin-top: 10px;">Session Count: <span id="typing-count" style="font-weight:bold;">0</span></p>
+            <p style="font-size: 0.7rem; color: #9b7a58;">✨ Not case sensitive — "srimatrenamaha" or "Sri Matre Namaha" both work. Multiple mantras in one submission are counted separately! ✨</p>
+        </div>
+    </div>
+
+    <!-- Timer -->
+    <div class="timer-controls" style="margin-top: 25px; background: rgba(201,147,58,0.1); border-radius: 20px; padding: 15px; text-align:center;">
+        <p>Time Spent Today: <span id="timer" style="font-size: 1.5rem; font-weight: bold; color: #bc6238;">00:00</span></p>
+        <p id="timer-status" style="font-size:0.85rem; opacity:0.7;">⏱️ Timer starts when you chant, stops after 2 seconds of inactivity</p>
+    </div>
+
+    <!-- Manual Sync Button -->
+    <div style="text-align:center; margin: 15px 0;">
+        <button onclick="manualSync()" style="background:#4caf50; color:white; padding:10px 20px; border:none; border-radius:40px; cursor:pointer; font-weight:bold;">
+            🔄 Manual Sync to Cloud
+        </button>
+    </div>
+
+    <!-- Offline warning -->
+    <div id="offline-warning" style="display:none; background:#fff3e0; border-left:4px solid #ff9800; padding:10px; margin-top:15px; border-radius:12px; font-size:0.85rem; text-align:center;">
+        🔴 You are offline. Your progress is being saved locally and will sync when internet returns.
+    </div>
+
+</div>
+
+<button class="scroll-top" id="scrollTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+<script src="firebase-config.js?v=2"></script>
+<script src="auth.js?v=2"></script>
+<script src="tracker.js?v=2"></script>
+
+<script>
+window.addEventListener('scroll', () => {
+    const btn = document.getElementById('scrollTop');
+    if (window.scrollY > 300) btn.classList.add('show');
+    else btn.classList.remove('show');
+});
+
+// Connection status function
+function updateConnectionStatus() {
+    const statusDiv = document.getElementById('connection-status');
+    const warningDiv = document.getElementById('offline-warning');
+    if (statusDiv) {
+        if (navigator.onLine) {
+            statusDiv.innerHTML = '<span class="online-badge">🟢 Online - Auto Syncing</span>';
+            if (warningDiv) warningDiv.style.display = 'none';
+        } else {
+            statusDiv.innerHTML = '<span class="offline-badge">🔴 Offline - Saving Locally</span>';
+            if (warningDiv) warningDiv.style.display = 'block';
+        }
+    }
+}
+
+window.addEventListener('online', updateConnectionStatus);
+window.addEventListener('offline', updateConnectionStatus);
+updateConnectionStatus();
+</script>
+<script src="/pwa.js?v=2"></script>
+</body>
+</html>

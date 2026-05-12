@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<link rel="manifest" href="/manifest.json">
+<!-- iOS (iPhone/iPad) PWA support -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Japa Tracker">
+<link rel="apple-touch-icon" href="/icons/icon-152.png">
+<link rel="apple-touch-icon" sizes="192x192" href="/icons/icon-192.png">
+<!-- Android PWA support -->
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#7a2e2e">
+<link rel="icon" sizes="192x192" href="/icons/icon-192.png">
+<link rel="icon" sizes="512x512" href="/icons/icon-512.png">
+<title>Devotional Tracker - Home</title>
+<link rel="stylesheet" href="style.css?v=2">
+</head>
+<body>
+
+<nav class="sacred-nav">
+    <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        <a href="index.html">Home</a>
+        <a href="tracker.html">Japa</a>
+        <a href="stats.html">Stats</a>
+        <a href="argala-stotram.html">Argala-Stotram</a>
+        <a href="hanuman-chalisa.html">Hanuman Chalisa</a>
+        <a href="gita-quotes.html">Gita-Quotes</a>
+        <a href="about.html">About</a>
+    </div>
+    <button id="logout">Logout</button>
+</nav>
+
+<div class="sacred-page">
+    <div class="sacred-header">
+        <span class="om">ॐ</span>
+        <h1>Devotional Tracker</h1>
+        <div class="subtitle">Track your daily mantra chanting with devotion</div>
+        <div id="connection-status" style="text-align:center; margin-top:8px;"></div>
+    </div>
+
+    <div class="intro-card" style="text-align:center;">
+        <p>Welcome to your spiritual companion. This app helps you maintain a consistent Japa practice — the foundation of Bhakti Yoga.</p>
+        <div id="offline-warning" style="display:none; background:#fff3e0; border-left:4px solid #ff9800; padding:10px; margin-top:10px; border-radius:12px; font-size:0.85rem;">
+            🔴 You are offline. Your japa is saved locally and will sync when internet returns.
+        </div>
+    </div>
+
+    <div class="mantra-section">
+        <label for="user-mantra">🌸 Your Mantra</label>
+        <input type="text" id="user-mantra" value="Sri Matre Namaha" placeholder="Enter your mantra">
+        <small>✨ Customize for your Ishta Devata ✨</small>
+    </div>
+
+    <div class="theme-card" style="text-align:center;">
+        <h3>📿 Today's Progress</h3>
+        <p class="stats-value" id="streak-count" style="font-size:2.5rem; margin:0.5rem 0;">--</p>
+        <p>Current Streak (days)</p>
+        <p style="margin-top:10px;">Today's Japa: <strong id="today-count">...</strong></p>
+        <div class="theme-grid" style="justify-content:center; margin-top:1rem;">
+            <span class="theme-badge">🎯 Daily Goal: 108 (1 Mala)</span>
+            <span class="theme-badge">🔥 Keep Your Streak Alive</span>
+        </div>
+    </div>
+
+    <div class="nav-buttons">
+        <button type="button" onclick="window.location.href='tracker.html'">📿 Start Japa</button>
+        <button type="button" onclick="window.location.href='stats.html'">📊 View My Stats</button>
+    </div>
+</div>
+
+<button class="scroll-top" id="scrollTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+<script src="firebase-config.js?v=2"></script>
+<script src="auth.js?v=2"></script>
+<script>
+window.addEventListener('scroll', () => {
+    document.getElementById('scrollTop').classList.toggle('show', window.scrollY > 300);
+});
+
+function updateConnectionStatus() {
+    const s = document.getElementById('connection-status');
+    const w = document.getElementById('offline-warning');
+    if (!s) return;
+    if (navigator.onLine) {
+        s.innerHTML = '<span class="online-badge">🟢 Online</span>';
+        if (w) w.style.display = 'none';
+    } else {
+        s.innerHTML = '<span class="offline-badge">🔴 Offline</span>';
+        if (w) w.style.display = 'block';
+    }
+}
+window.addEventListener('online',  updateConnectionStatus);
+window.addEventListener('offline', updateConnectionStatus);
+updateConnectionStatus();
+
+// Local date — NOT UTC (fixes IST timezone bug)
+function getToday() {
+    const n = new Date();
+    return `${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,'0')}-${String(n.getDate()).padStart(2,'0')}`;
+}
+
+let currentUserId = null;
+
+async function loadData() {
+    const todayEl  = document.getElementById('today-count');
+    const streakEl = document.getElementById('streak-count');
+    const mantraEl = document.getElementById('user-mantra');
+
+    const user = auth.currentUser;
+    if (user) {
+        currentUserId = user.uid;
+    } else {
+        const s = localStorage.getItem('offline_user_session');
+        if (s) currentUserId = JSON.parse(s).uid;
+        else { if (streakEl) streakEl.textContent = '--'; if (todayEl) todayEl.textContent = '0'; return; }
+    }
+
+    const today = getToday();
+
+    // Show local data immediately
+    const localKey  = `japa_local_${currentUserId}`;
+    const localRaw  = localStorage.getItem(localKey);
+    if (localRaw) {
+        try {
+            const local = JSON.parse(localRaw);
+            if (local.date === today && todayEl) todayEl.textContent = local.count || 0;
+        } catch(e) {}
+    }
+
+    try {
+        // Load today's count from Firebase
+        const dailyDoc = await db.collection('japa').doc(currentUserId).collection('daily').doc(today).get();
+        if (todayEl) todayEl.textContent = dailyDoc.exists ? (dailyDoc.data().count || 0) : (todayEl.textContent === '...' ? '0' : todayEl.textContent);
+
+        // Load streak + mantra
+        const userDoc = await db.collection('users').doc(currentUserId).get();
+        if (userDoc.exists) {
+            if (streakEl) streakEl.textContent = (userDoc.data().streak || 0) + ' Days';
+            if (mantraEl) mantraEl.value = userDoc.data().mantra || 'Sri Matre Namaha';
+        } else {
+            if (streakEl) streakEl.textContent = '0 Days';
+        }
+    } catch(e) {
+        console.error('Home load error:', e);
+        if (streakEl && streakEl.textContent === '--') streakEl.textContent = '?';
+    }
+}
+
+document.getElementById('user-mantra')?.addEventListener('change', async () => {
+    if (!currentUserId) return;
+    const v = document.getElementById('user-mantra').value.trim();
+    if (v) {
+        try { await db.collection('users').doc(currentUserId).set({ mantra: v }, { merge: true }); }
+        catch(e) {}
+    }
+});
+
+auth.onAuthStateChanged((user) => {
+    if (user) {
+        currentUserId = user.uid;
+        localStorage.setItem('offline_user_session', JSON.stringify({ uid: user.uid, email: user.email }));
+        loadData();
+    } else {
+        const s = localStorage.getItem('offline_user_session');
+        if (s) { currentUserId = JSON.parse(s).uid; loadData(); }
+        else { const el = document.getElementById('streak-count'); if (el) el.textContent = '--'; }
+    }
+});
+</script>
+<script src="/pwa.js?v=2"></script>
+</body>
+</html>

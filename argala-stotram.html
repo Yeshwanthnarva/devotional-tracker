@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<link rel="manifest" href="/manifest.json">
+<!-- iOS (iPhone/iPad) PWA support -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Japa Tracker">
+<link rel="apple-touch-icon" href="/icons/icon-152.png">
+<link rel="apple-touch-icon" sizes="192x192" href="/icons/icon-192.png">
+<!-- Android PWA support -->
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#7a2e2e">
+<link rel="icon" sizes="192x192" href="/icons/icon-192.png">
+<link rel="icon" sizes="512x512" href="/icons/icon-512.png">
+<title>Argala Stotram | The Divine Hymn of Grace</title>
+<link rel="stylesheet" href="style.css?v=2">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600&family=Noto+Sans+Devanagari:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<nav class="sacred-nav">
+    <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        <a href="index.html"> Home</a>
+        <a href="tracker.html"> Japa</a>
+        <a href="stats.html"> Stats</a>
+        <a href="argala-stotram.html"> Argala-Stotram</a>
+        <a href="hanuman-chalisa.html"> Hanuman Chalisa</a>
+        <a href="gita-quotes.html"> Gita-Quotes</a>
+        <a href="about.html"> About</a>
+    </div>
+    <button id="logout">Logout</button>
+</nav>
+
+<div class="sacred-page">
+  <div class="sacred-header">
+    <div class="om-symbol">ॐ</div>
+    <h1>Argala Stotram</h1>
+    <div class="subtitle">अर्गलास्तोत्रम् — The Hymn that Unlocks Divine Grace</div>
+  </div>
+
+  <!-- Main introduction with full context -->
+  <div class="intro-card">
+    <p><strong>Argala Stotram</strong> is a powerful hymn dedicated to Goddess Durga, often recited during the Chandi Path or Durga Saptashati. The stotram invokes the blessings of the Goddess in her various forms, asking for protection, prosperity, victory, and the removal of obstacles. The word <strong>"Argala"</strong> refers to a "bolt" or "lock," and just as a lock needs to be opened to gain access to something valuable, the recitation of the Argala Stotram unlocks the blessings and grace of the Divine Mother.</p>
+  </div>
+
+  <!-- Historical & Scriptural Context -->
+  <div class="theme-card">
+    <h3 style="color:#a4451c; margin-bottom:0.5rem;">📜 Historical & Scriptural Context</h3>
+    <p>The Argala Stotram is a part of the <strong>Durga Saptashati</strong> (Devi Mahatmyam) within the Markandeya Purana, which narrates the Goddess's battles with various demons — symbolizing the triumph of good over evil and the cosmic struggle between dharma and adharma. The Durga Saptashati contains 700 verses, and the Argala Stotram serves as a prelude or introduction to this sacred text. Reciting it before the Saptashati enhances spiritual benefits and the efficacy of the ritual.</p>
+  </div>
+
+  <!-- Structure & Meaning -->
+  <div class="theme-card">
+    <h3 style="color:#a4451c; margin-bottom:0.5rem;">📖 Structure & Meaning</h3>
+    <p>The Argala Stotram consists of verses where each verse is a prayer asking the Goddess for specific boons. The refrain <strong class="refrain-highlight">"rūpaṃ dehi, jayaṃ dehi, yaśo dehi, dviṣo jahi"</strong> repeats throughout, emphasizing the devotee's desire for inner beauty, victory, fame, and the destruction of enemies — both external and internal.</p>
+  </div>
+
+  <!-- Key Themes & Symbolism (detailed) -->
+  <div class="theme-card">
+    <h3 style="color:#a4451c; margin-bottom:0.8rem;">✨ Key Themes & Symbolism</h3>
+    <div class="theme-grid">
+      <span class="theme-badge">🏆 Victory Over Evil</span>
+      <span class="theme-badge">🛡️ Protection & Guidance</span>
+      <span class="theme-badge">🌟 Fame, Fortune & Prosperity</span>
+      <span class="theme-badge">⚔️ Removal of Obstacles & Enemies</span>
+      <span class="theme-badge">🙏 Devotion & Surrender</span>
+      <span class="theme-badge">🌸 Grace of the Goddess</span>
+    </div>
+    <p><strong>Victory Over Evil:</strong> The Goddess is praised for victories over Mahishasura, Shumbha-Nishumbha, Raktabīja — representing ego, ignorance, greed, lust. <br>
+    <strong>Protection & Guidance:</strong> The devotee turns to Durga for protection from physical, mental, and spiritual obstacles.<br>
+    <strong>Fame, Fortune & Prosperity:</strong> Prayers for wealth, health, and success (both material and spiritual).<br>
+    <strong>Removal of Obstacles & Enemies:</strong> Enemies symbolize doubt, fear, jealousy; by destroying them, the Goddess paves the way for success.<br>
+    <strong>Devotion & Surrender:</strong> Acknowledges all blessings flow from Her grace.<br>
+    <strong>Grace of the Goddess:</strong> She is Bhagavati, Jagadamba — the all-pervading force that bestows auspiciousness.</p>
+  </div>
+
+  <!-- ===== NYASA / INVOCATION ===== -->
+  <div class="verse-card">
+    <div class="verse-number">🕉️ Nyāsa — Invocation</div>
+    <div class="verse-sanskrit">ॐ अस्य श्री अर्गलास्तोत्रमन्त्रस्य विष्णुः ऋषिः।<br>अनुष्टुप् छन्दः। श्री महालक्ष्मीः देवता।<br>श्रीजगदम्बाप्रीतये सप्तशतीपाठाङ्गत्वेन जपे विनियोगः॥<br>ॐ नमश्चण्डिकायै॥</div>
+    <div class="verse-transliteration">Om Asya Shri Argalastotramantrasya Vishnur Rishih | Anushtup Chandah | Shri Mahalakshmir Devata | Shri Jagadamba Preetaye Saptashati Paathangatvena Jape Viniyogah || Om Namash Chandikayai ||</div>
+    <div class="verse-meaning"><strong>Meaning:</strong> This is the dedication (Sankalpa). The seer (Rishi) is Vishnu, meter Anushtup, deity Śrī Mahālakṣmī. It is recited for the pleasure of Śrī Jagadambā (Mother of the Universe). We bow to Chandika (the fierce and victorious form of Devi).</div>
+  </div>
+
+  <div class="sacred-divider"><span>🌸</span></div>
+
+  <!-- MARKANDEYA UVAACHA: verse 1 (opening salutation) -->
+  <div class="verse-card">
+    <div class="verse-number">📜 Mārkaṇḍeya Uvāca — Opening Hymn</div>
+    <div class="verse-sanskrit">ॐ जयन्ती मङ्गला काली भद्रकाली कपालिनी।<br>दुर्गा क्षमा शिवा धात्री स्वाहा स्वधा नमोऽस्तु ते॥</div>
+    <div class="verse-transliteration">Om Jayanti Mangala Kali Bhadrakali Kapalini | Durga Kshama Shiva Dhatri Swaha Swadha Namostute ||</div>
+    <div class="verse-meaning"><strong>Salutations to You</strong> who are Jayanti (Ever-Victorious), Mangala (Auspicious), Kali (beyond Time), Bhadrakali, Kapalini, Durga (remover of difficulties), Kshama (Forgiveness), Shiva, Dhatri (Supporter), Svaha and Svadha. Salutations to You, O Divine Mother.</div>
+  </div>
+
+  <div class="sacred-divider"><span>🌸</span></div>
+
+  <!-- Verse 1 (Jaya tvam) -->
+  <div class="verse-card"><div class="verse-number">Verse 1</div>
+    <div class="verse-sanskrit">जय त्वं देवि चामुण्डे जय भूतार्तिहारिणि।<br>जय सर्वगते देवि कालरात्रि नमोऽस्तु ते॥</div>
+    <div class="verse-transliteration">Jaya Tvam Devi Chamunde Jaya Bhutarti-harini | Jaya Sarvagate Devi Kalaratri Namostute ||</div>
+    <div class="verse-meaning"><strong>Victory to You, O Devi Chamunda!</strong> Victory to You who removes the sufferings of all beings! Victory to You, all-pervading Goddess, O Kalaratri — salutations to You.</div>
+  </div>
+
+  <!-- Verse 2 (Madhu-Kaitabha) -->
+  <div class="verse-card"><div class="verse-number">Verse 2</div>
+    <div class="verse-sanskrit">मधुकैटभविद्राविविधात्रि वरदे नमः।<br>रूपं देहि जयं देहि यशो देहि द्विषो जहि॥</div>
+    <div class="verse-transliteration">Madhu-Kaitabha Vidravi Vidhatri Vara-de Namah | Roopam Dehi Jayam Dehi Yasho Dehi Dvisho Jahi ||</div>
+    <div class="verse-meaning">Salutations to You who destroyed Madhu and Kaitabha and granted boons to Brahma. <strong>Grant me beauty, grant me victory, grant me fame, and destroy my enemies.</strong></div>
+  </div>
+
+  <!-- Verse 3 Mahishasura -->
+  <div class="verse-card"><div class="verse-number">Verse 3</div>
+    <div class="verse-sanskrit">महिषासुरनिर्नाशि भक्तानां सुखदे नमः।<br>रूपं देहि जयं देहि यशो देहि द्विषो जहि॥</div>
+    <div class="verse-transliteration">Mahishasura Nirnashi Bhaktanam Sukhade Namah | Roopam Dehi Jayam Dehi Yasho Dehi Dvisho Jahi ||</div>
+    <div class="verse-meaning">Salutations to You who annihilated Mahishasura (ego & inertia) and bestow joy upon devotees. O Devi — grant me Beauty, Victory, Glory, destroy my enemies.</div>
+  </div>
+
+  <!-- Verse 4 Raktabija -->
+  <div class="verse-card"><div class="verse-number">Verse 4</div>
+    <div class="verse-sanskrit">रक्तबीजवधे देवि चण्डमुण्डविनाशिनि।<br>रूपं देहि जयं देहि यशो देहि द्विषो जहि॥</div>
+    <div class="verse-transliteration">Raktabija-vadhe Devi Chanda-Munda Vinashini | Roopam Dehi Jayam Dehi Yasho Dehi Dvisho Jahi ||</div>
+    <div class="verse-meaning">O slayer of Raktabīja (recurring negative tendencies) and destroyer of Chanda-Munda — grant me Beauty, Victory, Glory, destroy my enemies.</div>
+  </div>
+
+  <!-- Verse 5 Shumbha-Nishumbha -->
+  <div class="verse-card"><div class="verse-number">Verse 5</div>
+    <div class="verse-sanskrit">शुम्भस्यैव निशुम्भस्य धूम्राक्षस्य च मर्दिनि।<br>रूपं देहि जयं देहि यशो देहि द्विषो जहि॥</div>
+    <div class="verse-transliteration">Shumbhasyaiva Nishumbhasya Dhumrakshasya Cha Mardini | Roopam Dehi Jayam Dehi Yasho Dehi Dvisho Jahi ||</div>
+    <div class="verse-meaning">O destroyer of Śumbha, Niśumbha (pride & ego) and Dhūmrākṣa (delusion) — grant me Beauty, Victory, Glory, destroy my enemies.</div>
+  </div>
+
+  <!-- Verse 6 Vanditanghri -->
+  <div class="verse-card"><div class="verse-number">Verse 6</div>
+    <div class="verse-sanskrit">वन्दिताङ्घ्रियुगे देवि सर्वसौभाग्यदायिनि।<br>रूपं देहि जयं देहि यशो देहि द्विषो जहि॥</div>
+    <div class="verse-transliteration">Vanditanghri-yuge Devi Sarva-saubhagya-dayini | Roopam Dehi Jayam Dehi Yasho Dehi Dvisho Jahi ||</div>
+    <div class="verse-meaning">O Goddess whose feet are worshipped, bestower of all good fortune — grant me Beauty, Victory, Glory, destroy my enemies.</div>
+  </div>
+
+  <!-- Verse 7 Achintya -->
+  <div class="verse-card"><div class="verse-number">Verse 7</div>
+    <div class="verse-sanskrit">अचिन्त्यरूपचरिते सर्वशत्रुविनाशिनि।<br>रूपं देहि जयं देहि यशो देहि द्विषो जहि॥</div>
+    <div class="verse-transliteration">Achintya-roopa-charite Sarva-shatru-vinashini | Roopam Dehi Jayam Dehi Yasho Dehi Dvisho Jahi ||</div>
+    <div class="verse-meaning">O Goddess of inconceivable form & deeds, destroyer of all enemies — grant me Beauty, Victory, Glory, destroy my enemies.</div>
+  </div>
+
+  <!-- Verse 8 Natebhyah -->
+  <div class="verse-card"><div class="verse-number">Verse 8</div>
+    <div class="verse-sanskrit">नतेभ्यः सर्वदा भक्त्या चण्डिके दुरितापहे।<br>रूपं देहि जयं देहि यशो देहि द्विषो जहि॥</div>
+    <div class="verse-transliteration">Natebhyah Sarvada Bhaktya Chandike Duritapaha | Roopam Dehi Jayam Dehi Yasho Dehi Dvisho Jahi ||</div>
+    <div class="verse-meaning">O Chandika, remover of sorrows for those who bow with devotion — grant me Beauty, Victory, Glory, destroy my enemies.</div>
+  </div>
+
+  <!-- Verse 9 Stuvadbhyo -->
+  <div class="verse-card"><div class="verse-number">Verse 9</div>
+    <div class="verse-sanskrit">स्तुवद्भ्यो भक्तिपूर्वं त्वां चण्डिके व्याधिनाशिनि।<br>रूपं देहि जयं देहि यशो देहि द्विषो जहि॥</div>
+    <div class="verse-transliteration">Stuvadbhyo Bhakti-poorvam Tvam Chandike Vyadhi-nashini | Roopam Dehi Jayam Dehi Yasho Dehi Dvisho Jahi ||</div>
+    <div class="verse-meaning">O Chandika, destroyer of diseases, praised with devotion — grant me Beauty, Victory, Glory, destroy my enemies.</div>
+  </div>
+
+  <!-- Verse 10 Satatam -->
+  <div class="verse-card"><div class="verse-number">Verse 10</div>
+    <div class="verse-sanskrit">चण्डिके सततं ये त्वामर्चयन्तीह भक्तितः।<br>रूपं देहि जयं देहि यशो देहि द्विषो जहि॥</div>
+    <div class="verse-transliteration">Chandike Satatam Ye Tvam Archayantiha Bhaktitah | Roopam Dehi Jayam Dehi Yasho Dehi Dvisho Jahi ||</div>
+    <div class="verse-meaning">O Chandika, those who constantly worship You with devotion — grant me Beauty, Victory, Glory, destroy my enemies.</div>
+  </div>
+
+  <!-- Verse 11 Saubhagya -->
+  <div class="verse-card"><div class="verse-number">Verse 11</div>
+    <div class="verse-sanskrit">देहि सौभाग्यमारोग्यं देहि मे परमं सुखम्।<br>रूपं देहि जयं देहि यशो देहि द्विषो जहि॥</div>
+    <div class="verse-transliteration">Dehi Saubhagyam Arogyam Dehi Me Paramam Sukham | Roopam Dehi Jayam Dehi Yasho Dehi Dvisho Jahi ||</div>
+    <div class="verse-meaning">Grant me good fortune, health, and supreme happiness. Grant me Beauty, Victory, Glory, destroy my enemies.</div>
+  </div>
+
+  <!-- Verse 12 Vidhehi dvishatam -->
+  <div class="verse-card"><div class="verse-number">Verse 12</div>
+    <div class="verse-sanskrit">विधेहि द्विषतां नाशं विधेहि बलमुच्चकैः।<br>रूपं देहि जयं देहि यशो देहि द्विषो जहि॥</div>
+    <div class="verse-transliteration">Vidhehi Dvishatam Nasham Vidhehi Balam Uchchaih | Roopam Dehi Jayam Dehi Yasho Dehi Dvisho Jahi ||</div>
+    <div class="verse-meaning">Bring destruction to my enemies, grant me great strength. Grant me Beauty, Victory, Glory, destroy my enemies.</div>
+  </div>
+
+  <!-- Verse 13 Kalyanam -->
+  <div class="verse-card"><div class="verse-number">Verse 13</div>
+    <div class="verse-sanskrit">विधेहि देवि कल्याणं विधेहि परमां श्रियम्।<br>रूपं देहि जयं देहि यशो देहि द्विषो जहि॥</div>
+    <div class="verse-transliteration">Vidhehi Devi Kalyanam Vidhehi Paramam Shriyam | Roopam Dehi Jayam Dehi Yasho Dehi Dvisho Jahi ||</div>
+    <div class="verse-meaning">O Goddess, bestow auspiciousness and supreme prosperity. Grant me Beauty, Victory, Glory, destroy my enemies.</div>
+  </div>
+
+  <!-- Verse 14 Surasura shiro -->
+  <div class="verse-card"><div class="verse-number">Verse 14</div>
+    <div class="verse-sanskrit">सुरासुरशिरोरत्ननिघृष्टचरणेऽम्बिके।<br>रूपं देहि जयं देहि यशो देहि द्विषो जहि॥</div>
+    <div class="verse-transliteration">Surasura-shiro-ratna Nighrushta-charanembike | Roopam Dehi Jayam Dehi Yasho Dehi Dvisho Jahi ||</div>
+    <div class="verse-meaning">O Mother Ambika, whose feet are touched by jewelled crowns of gods & demons — grant me Beauty, Victory, Glory, destroy my enemies.</div>
+  </div>
+
+  <!-- Verse 15 Vidyavantam -->
+  <div class="verse-card"><div class="verse-number">Verse 15</div>
+    <div class="verse-sanskrit">विद्यावन्तं यशस्वन्तं लक्ष्मीवन्तं जनं कुरु।<br>रूपं देहि जयं देहि यशो देहि द्विषो जहि॥</div>
+    <div class="verse-transliteration">Vidyavantam Yashasvantam Lakshmivantam Janam Kuru | Roopam Dehi Jayam Dehi Yasho Dehi Dvisho Jahi ||</div>
+    <div class="verse-meaning">Make me learned, famous, and prosperous. Grant me Beauty, Victory, Glory, destroy my enemies.</div>
+  </div>
+
+  <!-- Verse 16 Prachanda daitya -->
+  <div class="verse-card"><div class="verse-number">Verse 16</div>
+    <div class="verse-sanskrit">प्रचण्डदैत्यदर्पघ्ने चण्डिके प्रणताय मे।<br>रूपं देहि जयं देहि यशो देहि द्विषो जहि॥</div>
+    <div class="verse-transliteration">Prachanda-daitya-darpa-ghne Chandike Pranataaya Me | Roopam Dehi Jayam Dehi Yasho Dehi Dvisho Jahi ||</div>
+    <div class="verse-meaning">O Chandika, destroyer of fierce demon pride, I bow to You — grant me Beauty, Victory, Glory, destroy my enemies.</div>
+  </div>
+
+  <!-- Verse 17 Chaturbhuje -->
+  <div class="verse-card"><div class="verse-number">Verse 17</div>
+    <div class="verse-sanskrit">चतुर्भुजे चतुर्वक्त्रसंस्तुते परमेश्वरि।<br>रूपं देहि जयं देहि यशो देहि द्विषो जहि॥</div>
+    <div class="verse-transliteration">Chaturbhuje Chaturvaktra-Sanstute Parameshwari | Roopam Dehi Jayam Dehi Yasho Dehi Dvisho Jahi ||</div>
+    <div class="verse-meaning">O four-armed Supreme Goddess, praised by four-faced Brahma — grant me Beauty, Victory, Glory, destroy my enemies.</div>
+  </div>
+
+  <!-- Verse 18 Krishnena -->
+  <div class="verse-card"><div class="verse-number">Verse 18</div>
+    <div class="verse-sanskrit">कृष्णेन संस्तुते देवि शश्वद्भक्त्या सदाम्बिके।<br>रूपं देहि जयं देहि यशो देहि द्विषो जहि॥</div>
+    <div class="verse-transliteration">Krishnena Samstute Devi Shashvad-bhaktya Sadaambike | Roopam Dehi Jayam Dehi Yasho Dehi Dvisho Jahi ||</div>
+    <div class="verse-meaning">O Devi Ambika, eternally praised by Lord Krishna — grant me Beauty, Victory, Glory, destroy my enemies.</div>
+  </div>
+
+  <!-- Verse 19 Himachala -->
+  <div class="verse-card"><div class="verse-number">Verse 19</div>
+    <div class="verse-sanskrit">हिमाचलसुतानाथसंस्तुते परमेश्वरि।<br>रूपं देहि जयं देहि यशो देहि द्विषो जहि॥</div>
+    <div class="verse-transliteration">Himachala-sutanatha-Sanstute Parameshwari | Roopam Dehi Jayam Dehi Yasho Dehi Dvisho Jahi ||</div>
+    <div class="verse-meaning">O Supreme Goddess praised by Shiva (Lord of Himavan's daughter) — grant me Beauty, Victory, Glory, destroy my enemies.</div>
+  </div>
+
+  <!-- Verse 20 Indrani-pati -->
+  <div class="verse-card"><div class="verse-number">Verse 20</div>
+    <div class="verse-sanskrit">इन्द्राणीपतिसद्भावपूजिते परमेश्वरि।<br>रूपं देहि जयं देहि यशो देहि द्विषो जहि॥</div>
+    <div class="verse-transliteration">Indrani-pati-sadbhaava-Poojite Parameshwari | Roopam Dehi Jayam Dehi Yasho Dehi Dvisho Jahi ||</div>
+    <div class="verse-meaning">O Parameshvari, worshipped by Indra with true devotion — grant me Beauty, Victory, Glory, destroy my enemies.</div>
+  </div>
+
+  <!-- Verse 21 Prachanda dordanda -->
+  <div class="verse-card"><div class="verse-number">Verse 21</div>
+    <div class="verse-sanskrit">देवि प्रचण्डदोर्दण्डदैत्यदर्पविनाशिनि।<br>रूपं देहि जयं देहि यशो देहि द्विषो जहि॥</div>
+    <div class="verse-transliteration">Devi Prachanda-dordanda-Daitya-darpa-vinashini | Roopam Dehi Jayam Dehi Yasho Dehi Dvisho Jahi ||</div>
+    <div class="verse-meaning">O Goddess who destroys demon pride with mighty arms — grant me Beauty, Victory, Glory, destroy my enemies.</div>
+  </div>
+
+  <!-- Verse 22 Bhakta janoddaama -->
+  <div class="verse-card"><div class="verse-number">Verse 22</div>
+    <div class="verse-sanskrit">देवि भक्तजनोद्दामदत्तानन्दोदयेम्बिके।<br>रूपं देहि जयं देहि यशो देहि द्विषो जहि॥</div>
+    <div class="verse-transliteration">Devi Bhakta-janoddaama-Dattaanandodayembike | Roopam Dehi Jayam Dehi Yasho Dehi Dvisho Jahi ||</div>
+    <div class="verse-meaning">O Mother Ambika, giver of great joy to devotees — grant me Beauty, Victory, Glory, destroy my enemies.</div>
+  </div>
+
+  <!-- Final verse Patnim -->
+  <div class="verse-card"><div class="verse-number">Verse 23 — Prayer for Noble Life</div>
+    <div class="verse-sanskrit">पत्नीं मनोरमां देहि मनोवृत्तानुसारिणीम्।<br>तारिणीं दुर्गसंसारसागरस्य कुलोद्भवाम्॥</div>
+    <div class="verse-transliteration">Patnim Manoramam Dehi Mano-vritta-anusarini | Tarini Durga Samsara-Sagarasya Kulodbhavam ||</div>
+    <div class="verse-meaning">Grant me a delightful companion aligned with dharma, who helps me cross the ocean of samsara, born of noble lineage. (Spiritually: a mind attuned to virtue, and divine grace that liberates.)</div>
+  </div>
+
+  <div class="sacred-divider"><span>🔱</span></div>
+
+  <!-- Phala Shruti -->
+  <div class="verse-card">
+    <div class="verse-number">🌟 Phala-śruti — The Fruit of Recitation</div>
+    <div class="verse-sanskrit">इदं स्तोत्रं पठित्वा तु महास्तोत्रं पठेन्नरः।<br>स तु सप्तशतीसंख्यावरमाप्नोति सम्पदम्॥</div>
+    <div class="verse-transliteration">Idam Stotram Pathitva Tu Maha-stotram Pathen Narah | Sa Tu Saptashati-sankhya Varam Apnoti Sampadam ||</div>
+    <div class="verse-meaning">Having recited this Argala Stotram, one should read the Maha Stotram (Durga Saptashati). He attains the merit equal to reciting the entire Saptashati and achieves great prosperity — both material and spiritual.</div>
+  </div>
+
+  <div class="intro-card" style="text-align:center; background:#fffaf2;">
+    <p>🙏 <strong>iti Devyāḥ Argalāstotraṃ Sampūrṇam</strong> 🙏<br>Thus ends the complete Argala Stotram of the Goddess.<br><em>May the Divine Mother bless all who recite these sacred verses with devotion.</em><br><br> ॐ नमश्चण्डिकायै || Om Namash Chandikayai</p>
+  </div>
+  <footer>✨ Chant with reverence — Argala Stotram from Durga Saptashati ✨</footer>
+</div>
+
+<button class="scroll-top" id="scrollTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+<script src="firebase-config.js?v=2"></script>
+<script src="auth.js?v=2"></script>
+<script>
+  window.addEventListener('scroll', () => {
+    const btn = document.getElementById('scrollTop');
+    if (window.scrollY > 300) btn.classList.add('show');
+    else btn.classList.remove('show');
+  });
+  // logout dummy (UI only, consistent with template)
+  document.getElementById('logout')?.addEventListener('click', () => alert("Demo logout — integrate with Firebase auth as needed"));
+</script>
+<script src="/pwa.js?v=2"></script>
+</body>
+</html>

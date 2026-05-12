@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<link rel="manifest" href="/manifest.json">
+<!-- iOS (iPhone/iPad) PWA support -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Japa Tracker">
+<link rel="apple-touch-icon" href="/icons/icon-152.png">
+<link rel="apple-touch-icon" sizes="192x192" href="/icons/icon-192.png">
+<!-- Android PWA support -->
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#7a2e2e">
+<link rel="icon" sizes="192x192" href="/icons/icon-192.png">
+<link rel="icon" sizes="512x512" href="/icons/icon-512.png">
+<title>Login | Devotional Tracker</title>
+<link rel="stylesheet" href="style.css?v=2">
+<style>
+  .offline-banner {
+    background: #fff3e0;
+    border-left: 4px solid #ff9800;
+    padding: 12px;
+    margin-bottom: 20px;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    text-align: center;
+  }
+  .offline-banner a {
+    color: #d9914a;
+    text-decoration: underline;
+  }
+</style>
+</head>
+<body>
+
+    <div class="loading-overlay" id="loading-overlay">
+        <div class="spinner"></div>
+        <span>Signing you in...</span>
+    </div>
+
+    <div class="auth-container">
+        <h1>🙏 Devotional Tracker</h1>
+        <p class="subtitle">Sign in to continue your practice</p>
+
+        <!-- Offline warning banner -->
+        <div id="offline-banner" class="offline-banner" style="display:none;">
+            🔴 You are offline. Please check your internet connection.
+            <br><small>💡 Already have an account? The app works offline after you login once!</small>
+        </div>
+
+        <div id="message" class="message"></div>
+
+        <input type="email" id="email" placeholder="Email address" autocomplete="email">
+        <input type="password" id="password" placeholder="Password" autocomplete="current-password">
+
+        <button onclick="loginWithEmail()">Sign In</button>
+        <button onclick="createAccount()">Create Account</button>
+
+        <hr>
+
+        <button onclick="loginWithGoogle()">
+            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
+                 style="width:18px;vertical-align:middle;margin-right:8px;">
+            Continue with Google
+        </button>
+
+        <p style="margin-top:14px;font-size:0.9rem;">
+            <a href="#" onclick="forgotPassword()">Forgot password?</a>
+        </p>
+        
+        <!-- Show offline cached session info -->
+        <div id="cached-session-info" style="margin-top: 20px; font-size: 0.8rem; color: #9b7a58; display:none;">
+            ⚡ You have a saved session. <a href="#" onclick="tryOfflineLogin()">Try using app offline</a>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyAf9irHJ0QF42Ke4yp97z2jZUUKPpnUGdQ",
+            authDomain: "devotional-tracker-7a39a.web.app",
+            projectId: "devotional-tracker-7a39a",
+            storageBucket: "devotional-tracker-7a39a.firebasestorage.app",
+            messagingSenderId: "485605016342",
+            appId: "1:485605016342:web:91aab150045637928c8637"
+        };
+
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db   = firebase.firestore();
+
+        // Check offline status
+        function isOffline() {
+            return !navigator.onLine;
+        }
+
+        function updateOfflineUI() {
+            const banner = document.getElementById('offline-banner');
+            const cachedInfo = document.getElementById('cached-session-info');
+            
+            if (isOffline()) {
+                if (banner) banner.style.display = 'block';
+                
+                // Check if there's a cached session
+                const cachedSession = localStorage.getItem('offline_user_session');
+                if (cachedSession && cachedInfo) {
+                    cachedInfo.style.display = 'block';
+                }
+            } else {
+                if (banner) banner.style.display = 'none';
+                if (cachedInfo) cachedInfo.style.display = 'none';
+            }
+        }
+
+        // Try to use cached session offline
+        window.tryOfflineLogin = function() {
+            const cachedSession = localStorage.getItem('offline_user_session');
+            if (cachedSession) {
+                const session = JSON.parse(cachedSession);
+                if (session.uid && session.email) {
+                    // Go to app using cached session
+                    window.location.href = 'index.html';
+                }
+            }
+        };
+
+        window.addEventListener('online', () => {
+            updateOfflineUI();
+            document.getElementById('message').style.display = 'none';
+        });
+        window.addEventListener('offline', updateOfflineUI);
+        updateOfflineUI();
+
+        // ── Helpers ────────────────────────────────────────────
+        function showMessage(msg, type = 'error') {
+            const el = document.getElementById('message');
+            el.textContent = msg;
+            el.className = 'message ' + type;
+            el.style.display = 'block';
+            if (type === 'error') setTimeout(() => el.style.display = 'none', 5000);
+        }
+
+        function showLoading(visible) {
+            document.getElementById('loading-overlay').style.display = visible ? 'flex' : 'none';
+        }
+
+        async function ensureUserDoc(user) {
+            const doc = await db.collection('users').doc(user.uid).get();
+            if (!doc.exists) {
+                await db.collection('users').doc(user.uid).set({
+                    mantra: "Sri Matre Namaha",
+                    streak: 0,
+                    lastJapaDate: ""
+                });
+            }
+        }
+
+        function friendlyError(code) {
+            if (isOffline()) return "You are offline. Please check your internet connection.";
+            const map = {
+                'auth/user-not-found':        'No account found with this email.',
+                'auth/wrong-password':         'Incorrect password. Try again.',
+                'auth/invalid-email':          'Please enter a valid email address.',
+                'auth/invalid-credential':     'Incorrect email or password. Try again.',
+                'auth/email-already-in-use':   'An account with this email already exists.',
+                'auth/weak-password':          'Password must be at least 6 characters.',
+                'auth/too-many-requests':      'Too many attempts. Please try again later.',
+                'auth/network-request-failed': 'Network error. Check your connection.',
+            };
+            return map[code] || 'Something went wrong. Please try again.';
+        }
+
+        // ── Handle Google redirect result ──────────────────────
+        if (sessionStorage.getItem('googleRedirectPending')) {
+            showLoading(true);
+        }
+
+        auth.getRedirectResult()
+            .then(async (result) => {
+                if (result && result.user) {
+                    sessionStorage.removeItem('googleRedirectPending');
+                    await ensureUserDoc(result.user);
+                    localStorage.setItem('offline_user_session', JSON.stringify({
+                        uid: result.user.uid,
+                        email: result.user.email
+                    }));
+                    window.location.href = 'index.html';
+                } else {
+                    showLoading(false);
+                }
+            })
+            .catch((error) => {
+                sessionStorage.removeItem('googleRedirectPending');
+                showLoading(false);
+                console.error('Google redirect error:', error);
+                if (error.code !== 'auth/no-auth-event' &&
+                    error.code !== 'auth/null-user') {
+                    showMessage('Google Sign-In failed: ' + error.message);
+                }
+            });
+
+        // ── Auth state ─────────────────────────────────────────
+        auth.onAuthStateChanged((user) => {
+            if (sessionStorage.getItem('googleRedirectPending')) return;
+            if (user) {
+                localStorage.setItem('offline_user_session', JSON.stringify({
+                    uid: user.uid,
+                    email: user.email
+                }));
+                window.location.href = 'index.html';
+            }
+        });
+
+        // ── Check cached session on load ───────────────────────
+        // If offline and have cached session, redirect to app
+        if (isOffline()) {
+            const cachedSession = localStorage.getItem('offline_user_session');
+            if (cachedSession) {
+                const session = JSON.parse(cachedSession);
+                if (session.uid && session.email) {
+                    // Redirect to app - user was previously logged in
+                    window.location.href = 'index.html';
+                }
+            }
+        }
+
+        // ── Email login ────────────────────────────────────────
+        window.loginWithEmail = async function() {
+            if (isOffline()) {
+                showMessage('You are offline. Please connect to the internet to login.');
+                return;
+            }
+            const email    = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            if (!email || !password) return showMessage('Please enter your email and password');
+            try {
+                await auth.signInWithEmailAndPassword(email, password);
+            } catch(e) { showMessage(friendlyError(e.code)); }
+        };
+
+        // ── Create account ─────────────────────────────────────
+        window.createAccount = async function() {
+            if (isOffline()) {
+                showMessage('You are offline. Please connect to the internet to create an account.');
+                return;
+            }
+            const email    = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            if (!email || !password) return showMessage('Please enter your email and password');
+            if (password.length < 6) return showMessage('Password must be at least 6 characters');
+            try {
+                const result = await auth.createUserWithEmailAndPassword(email, password);
+                await ensureUserDoc(result.user);
+            } catch(e) { showMessage(friendlyError(e.code)); }
+        };
+
+        // ── Google Sign-In ─────────────────────────────────────
+        window.loginWithGoogle = function() {
+            if (isOffline()) {
+                showMessage('You are offline. Please connect to the internet to login with Google.');
+                return;
+            }
+            sessionStorage.setItem('googleRedirectPending', '1');
+            showLoading(true);
+            const provider = new firebase.auth.GoogleAuthProvider();
+            auth.signInWithRedirect(provider);
+        };
+
+        // ── Forgot password ────────────────────────────────────
+        window.forgotPassword = async function() {
+            if (isOffline()) {
+                showMessage('You are offline. Please connect to the internet to reset your password.');
+                return;
+            }
+            const email = document.getElementById('email').value.trim();
+            if (!email) return showMessage('Enter your email address above first');
+            try {
+                await auth.sendPasswordResetEmail(email);
+                showMessage('Password reset email sent! Check your inbox.', 'success');
+            } catch(e) { showMessage(friendlyError(e.code)); }
+        };
+    </script>
+    <script src="/pwa.js?v=2"></script>
+</body>
+</html>
